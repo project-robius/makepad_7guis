@@ -1,9 +1,9 @@
 [package]
-name = "makepad_7_guis_counter"
+name = "makepad_7guis_counter"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Makepad counter example"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
-makepad-widgets = "0.3.0"
+makepad-widgets = { path = "../../widgets", version = "0.3.0" }

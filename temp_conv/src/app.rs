@@ -33,8 +33,11 @@ live_design! {
             }
 
            input_celsius = <TextInput> {
-                walk: {width: 100, height: 40},
-                text: "Input Celsius"
+                walk: {width: 80, height: 40},
+                draw_bg: {
+                    color: #121212
+                }
+                text: "Input"
             }
 
             label_celsius = <Label> {
@@ -50,8 +53,11 @@ live_design! {
             }
 
             input_fahrenheit = <TextInput> {
-                walk: {width: 100, height: 40},
-                text: "Input Fahrenheit"
+                walk: {width: 80, height: 40},
+                draw_bg: {
+                    color: #121212
+                }
+                text: "Input"
             }
 
             label_fahrenheit = <Label> {
@@ -122,7 +128,7 @@ impl AppMain for App{
         // widgets, while actions are always returned back upwards to parent widgets.
         let actions = self.ui.handle_widget_event(cx, event);
 
-        let res = self.ui.get_text_input(id!(input_celsius)).get_text();
+        let res = self.ui.get_text_input(id!(input_celsius)).changed(&actions);
         match res.parse::<i32>() {
             Ok(number) => {
                 self.f_value = (number * 9/5 + 32).to_string();
@@ -132,11 +138,11 @@ impl AppMain for App{
                 inp_f.redraw(cx);
             }
             Err(_) => {
-                println!("Invalid input. Please enter an integer.");
+                // println!("Invalid input. Please enter an integer.");
             }
         }
 
-        let res = self.ui.get_text_input(id!(input_fahrenheit)).get_text();
+        let res = self.ui.get_text_input(id!(input_fahrenheit)).changed(&actions);
         match res.parse::<i32>() {
             Ok(number) => {
                 self.c_value = ((number - 32) * 5/9).to_string();
@@ -146,7 +152,7 @@ impl AppMain for App{
                 inp_c.redraw(cx);
             }
             Err(_) => {
-                println!("Invalid input. Please enter an integer.");
+                // println!("Invalid input. Please enter an integer.");
             }
         }
     }

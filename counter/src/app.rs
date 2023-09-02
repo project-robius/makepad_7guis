@@ -8,10 +8,10 @@ use makepad_widgets::*;
 // initializes widgets from their corresponding DSL objects. Moreover, external programs (such
 // as a code editor) can notify the Makepad runtime that a DSL code block has been changed, allowing
 // the runtime to automatically update the affected widgets.
-live_design!{
+live_design! {
     import makepad_widgets::button::Button;
     import makepad_widgets::desktop_window::DesktopWindow;
-    import makepad_widgets::frame::Frame;
+    import makepad_widgets::view::View;
     import makepad_widgets::label::Label;
     
     // The `{{App}}` syntax is used to inherit a DSL object from a Rust struct. This tells the
@@ -19,36 +19,31 @@ live_design!{
     // instance of `App` is initialized, the Makepad runtime will obtain its initial values from
     // this DSL object.
     App = {{App}} {
-        // The `ui` field on the struct `App` defines a frame widget. Frames are used as containers
+        // The `ui` field on the struct `App` defines a view widget. Views are used as containers
         // for other widgets. Since the `ui` property on the DSL object `App` corresponds with the
         // `ui` field on the Rust struct `App`, the latter will be initialized from the DSL object
         // here below.
-        ui: <DesktopWindow>{<Frame>{
+        ui: <DesktopWindow>{
             
             show_bg: true
-            // The `layout` property determines how child widgets are laid out within a frame. In
+            // The `layout` property determines how child widgets are laid out within a view. In
             // this case, child widgets flow downward, with 20 pixels of spacing in between them,
-            // and centered horizontally with respect to the entire frame.
+            // and centered horizontally with respect to the entire view.
             //
             // Because the child widgets flow downward, vertical alignment works somewhat
             // differently. In this case, children are centered vertically with respect to the
-            // remainder of the frame after the previous children have been drawn.
-            layout: {
-                flow: Right,
-                spacing: 20,
-                align: {
-                    x: 0.5,
-                    y: 0.5
-                }
-            },
-            // The `walk` property determines how the frame widget itself is laid out. In this
-            // case, the frame widget takes up the entire window.
-            walk: {
-                width: Fill,
-                height: Fill
-            },
+            // remainder of the view after the previous children have been drawn.
+            flow: Right,
+            spacing: 20,
+            align: {
+                x: 0.5,
+                y: 0.5
+            }
+            // determines how the view widget itself is laid out. In this
+            // case, the view widget takes up the entire window.
+            width: Fill,
+            height: Fill
             draw_bg: {
-                
                 
                 // The `fn pixel(self) -> vec4` syntax is used to define a property named `pixel`,
                 // the value of which is a shader. We use our own custom DSL to define shaders. It's
@@ -69,16 +64,16 @@ live_design!{
             // can have both a field and an instance property with the same name.
             //
             // Widgets can hook into the Makepad runtime with custom code and determine for
-            // themselves how they want to handle instance properties. In the case of frame widgets,
+            // themselves how they want to handle instance properties. In the case of view widgets,
             // they simply iterate over their instance properties, and use them to instantiate their
             // child widgets.
             
             // A label to display the counter.
             label = <Label> {
-                draw_label: {
+                draw_text: {
                     color: #f
                 },
-                label: "0"
+                text: "0"
             }
 
             // A button to increment the counter.
@@ -89,10 +84,9 @@ live_design!{
             // existing values.
             
             button = <Button> {
-                label: "Count"
+                text: "Count"
             }
-
-        }}
+        }
     }
 }
 
@@ -115,8 +109,8 @@ app_main!(App);
 // called automatically by the code we generated with the call to the macro `main_app` above.
 
 pub struct App {
-    // A chromeless window for our application. Used to contain our frame widget.
-    // A frame widget. Used to contain our button and label.
+    // A chromeless window for our application. Used to contain our view widget.
+    // A view widget. Used to contain our button and label.
     #[live] ui: WidgetRef,
     
     // The value for our counter.
@@ -151,22 +145,22 @@ impl AppMain for App{
             return self.ui.draw_widget_all(&mut Cx2d::new(cx, event));
         }
         
-        // Forward the event to the frame. In this case, handle_event returns a list of actions.
+        // Forward the event to the view. In this case, handle_event returns a list of actions.
         // Actions are similar to events, except that events are always forwarded downward to child
         // widgets, while actions are always returned back upwards to parent widgets.
         let actions = self.ui.handle_widget_event(cx, event);
         
-        // Get a reference to our button from the frame, and check if one of the actions returned by
-        // the frame was a notification that the button was clicked.
-        if self.ui.get_button(id!(button)).clicked(&actions) {
+        // Get a reference to our button from the view, and check if one of the actions returned by
+        // the view was a notification that the button was clicked.
+        if self.ui.button(id!(button)).clicked(&actions) {
             //cx.spawn_async(Self::do_network_request(cx.get_ref(), self.ui.clone()))
             // Increment the counter.
             self.counter += 1;
             
-            // Get a reference to our label from the frame, update its text, and schedule a redraw
+            // Get a reference to our label from the view, update its text, and schedule a redraw
             // for it.
-            let label = self.ui.get_label(id!(label));
-            label.set_label(&format!("{}", self.counter));
+            let label = self.ui.label(id!(label));
+            label.set_text(&format!("{}", self.counter));
             label.redraw(cx);
         }
     }

@@ -26,23 +26,12 @@ live_design! {
         ui: <DesktopWindow>{
             
             show_bg: true
-            // The `layout` property determines how child widgets are laid out within a view. In
-            // this case, child widgets flow downward, with 20 pixels of spacing in between them,
-            // and centered horizontally with respect to the entire view.
-            //
-            // Because the child widgets flow downward, vertical alignment works somewhat
-            // differently. In this case, children are centered vertically with respect to the
-            // remainder of the view after the previous children have been drawn.
-            flow: Right,
-            spacing: 20,
-            align: {
-                x: 0.5,
-                y: 0.5
-            }
+
             // determines how the view widget itself is laid out. In this
             // case, the view widget takes up the entire window.
             width: Fill,
             height: Fill
+            
             draw_bg: {
                 
                 // The `fn pixel(self) -> vec4` syntax is used to define a property named `pixel`,
@@ -53,7 +42,7 @@ live_design! {
                     // Within a shader, the `self.geom_pos` syntax is used to access the `geom_pos`
                     // attribute of the shader. In this case, the `geom_pos` attribute is built in,
                     // and ranges from 0 to 1.
-                    return mix(#7, #3, self.geom_pos.y);
+                    return mix(#7, #3, self.pos.y);
                 }
             }
             
@@ -67,24 +56,38 @@ live_design! {
             // themselves how they want to handle instance properties. In the case of view widgets,
             // they simply iterate over their instance properties, and use them to instantiate their
             // child widgets.
-            
-            // A label to display the counter.
-            label = <Label> {
-                draw_text: {
-                    color: #f
-                },
-                text: "0"
-            }
+            <View> {
+                // The properties below determines how child widgets are laid out within a view. In
+                // this case, child widgets flow downward, with 20 pixels of spacing in between them,
+                // and centered horizontally with respect to the entire view.
+                //
+                // Because the child widgets flow downward, vertical alignment works somewhat
+                // differently. In this case, children are centered vertically with respect to the
+                // remainder of the view after the previous children have been drawn.
+                flow: Right,
+                spacing: 20,
+                align: {
+                    x: 0.5,
+                    y: 0.5
+                }
+                // A label to display the counter.
+                label = <Label> {
+                    draw_text: {
+                        color: #f
+                    },
+                    text: "0"
+                }
 
-            // A button to increment the counter.
-            //
-            // The `<Button>` syntax is used to inherit a DSL object from another DSL object. This
-            // tells the Makepad runtime our DSL object has the same properties as the DSL object
-            // named `Button`, except for the properties defined here below, which override any
-            // existing values.
-            
-            button = <Button> {
-                text: "Count"
+                // A button to increment the counter.
+                //
+                // The `<Button>` syntax is used to inherit a DSL object from another DSL object. This
+                // tells the Makepad runtime our DSL object has the same properties as the DSL object
+                // named `Button`, except for the properties defined here below, which override any
+                // existing values.
+                
+                button = <Button> {
+                    text: "Count"
+                }
             }
         }
     }
@@ -126,7 +129,7 @@ impl LiveHook for App {
     }
 }
 
-impl App{
+impl App {
     async fn _do_network_request(_cx:CxRef, _ui:WidgetRef, _url:&str)->String{
         //let x = fetch(urL).await;
         //ui.get_label(id!(thing)).set_text(&mut *cx.borrow_mut(), x);
@@ -135,7 +138,6 @@ impl App{
 }
 
 impl AppMain for App{
-    
     
     // This function is used to handle any incoming events from the host system. It is called
     // automatically by the code we generated with the call to the macro `main_app` above.

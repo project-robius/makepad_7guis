@@ -1,6 +1,6 @@
 [package]
-name = "makepad_7guis_temp_conv"
-version = "0.2.0"
+name = "makepad-7guis-temp-conv"
+version = "0.3.0"
 edition = "2021"
 description = "Makepad counter example"
 license = "MIT OR Apache-2.0"

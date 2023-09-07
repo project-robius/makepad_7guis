@@ -1,6 +1,6 @@
 [package]
-name = "makepad_7guis_counter"
-version = "0.1.0"
+name = "makepad-7guis-counter"
+version = "0.3.0"
 edition = "2021"
 description = "Makepad counter example"
 license = "MIT OR Apache-2.0"

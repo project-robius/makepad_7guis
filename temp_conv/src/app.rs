@@ -1,77 +1,72 @@
-// use makepad_widgets::makepad_draw::*;
-// use makepad_widgets::text_input::TextInputFrameRefExt;
 use makepad_widgets::*;
 
 live_design! {
     import makepad_widgets::desktop_window::DesktopWindow;
-    import makepad_widgets::frame::Frame;
     import makepad_widgets::label::Label;
     import makepad_widgets::text_input::TextInput;
+    import makepad_widgets::view::View;
 
     App = {{App}} {
-        ui: <DesktopWindow>{<Frame>{
-            layout: {
+        ui: <DesktopWindow>{
+            show_bg: true
+            width: Fill
+            height: Fill
+            draw_bg: {
+                shape: Solid
+                fn pixel(self) -> vec4 {
+                    return mix(#7, #3, self.pos.y);
+                }
+            }
+
+            <View> {
                 flow: Right,
                 spacing: 20,
                 align: {
                     x: 0.5,
                     y: 0.5
                 }
-            },
-            // The `walk` property determines how the frame widget itself is laid out. In this
-            // case, the frame widget takes up the entire window.
-            walk: {
-                width: Fill,
-                height: Fill
-            },
-            draw_bg: {
-                shape: Solid
 
-                fn pixel(self) -> vec4 {
-                    return mix(#7, #3, self.geom_pos.y);
+                input_celsius = <TextInput> {
+                    width: 80, height: 40,
+                    draw_bg: {
+                        color: #121212
+                    }
+                    text: "Input"
+                }
+
+                label_celsius = <Label> {
+                    width: 60, height: 40 
+                    align: {
+                        x: 0.5,
+                        y: 0.5
+                    }
+                    draw_text: {
+                        color: #0f0
+                    },
+                    text: "Celsius = "
+                }
+
+                input_fahrenheit = <TextInput> {
+                    width: 80, height: 40,
+                    draw_bg: {
+                        color: #121212
+                    }
+                    text: "Input"
+                }
+
+                label_fahrenheit = <Label> {
+                    width: 70, height: 40 
+                    align: {
+                        x: 0.5,
+                        y: 0.5
+                    }
+                    draw_text: {
+                        color: #0ff
+                    },
+                    text: "Fahrenheit"
                 }
             }
-
-           input_celsius = <TextInput> {
-                walk: {width: 80, height: 40},
-                draw_bg: {
-                    color: #121212
-                }
-                text: "Input"
-            }
-
-            label_celsius = <Label> {
-                walk: { width: 60, height: 40 }
-                align: {
-                    x: 0.5,
-                    y: 0.5
-                }
-                draw_label: {
-                    color: #0f0
-                },
-                label: "Celsius = "
-            }
-
-            input_fahrenheit = <TextInput> {
-                walk: {width: 80, height: 40},
-                draw_bg: {
-                    color: #121212
-                }
-                text: "Input"
-            }
-
-            label_fahrenheit = <Label> {
-                walk: { width: 60, height: 40 }
-                align: {
-                    x: 0.5,
-                    y: 0.5
-                }
-                draw_label: {
-                    color: #0ff
-                },
-                label: "Fahrenheit"
-            }
-        }}
+        }
     }
 }
 
@@ -128,32 +123,41 @@ impl AppMain for App{
         // widgets, while actions are always returned back upwards to parent widgets.
         let actions = self.ui.handle_widget_event(cx, event);
 
-        let res = self.ui.get_text_input(id!(input_celsius)).changed(&actions);
-        match res.parse::<i32>() {
-            Ok(number) => {
-                self.f_value = (number * 9/5 + 32).to_string();
-                println!("F={}", self.f_value);
-                let inp_f = self.ui.get_text_input(id!(input_fahrenheit));
-                inp_f.set_text(&format!("{}", self.f_value));
-                inp_f.redraw(cx);
-            }
-            Err(_) => {
-                // println!("Invalid input. Please enter an integer.");
+        let res = self.ui.text_input(id!(input_celsius)).changed(&actions);
+        match res {
+            Some(s) => match s.parse::<i32>() {
+                Ok(number) => {
+                    self.f_value = (number * 9/5 + 32).to_string();
+                    println!("F={}", self.f_value);
+                    let inp_f = self.ui.text_input(id!(input_fahrenheit));
+                    inp_f.set_text(&format!("{}", self.f_value));
+                    inp_f.redraw(cx);
+                }
+                Err(e) => {
+                    println!("Invalid input. Please enter an integer. {}", e);
+                }
+            },
+            None => {
+                // println!("No input to parse")
             }
         }
 
-        let res = self.ui.get_text_input(id!(input_fahrenheit)).changed(&actions);
-        match res.parse::<i32>() {
-            Ok(number) => {
-                self.c_value = ((number - 32) * 5/9).to_string();
-                println!("C={}",  self.c_value);
-                let inp_c = self.ui.get_text_input(id!(input_celsius));
-                inp_c.set_text(&format!("{}", self.c_value));
-                inp_c.redraw(cx);
-            }
-            Err(_) => {
-                // println!("Invalid input. Please enter an integer.");
-            }
-        }
+        let res = self.ui.text_input(id!(input_fahrenheit)).changed(&actions);
+        match res {
+            Some(s) => match s.parse::<i32>() {
+                Ok(number) => {
+                    self.c_value = ((number - 32) * 5/9).to_string();
+                    println!("C={}",  self.c_value);
+                    let inp_c = self.ui.text_input(id!(input_celsius));
+                    inp_c.set_text(&format!("{}", self.c_value));
+                    inp_c.redraw(cx);
+                }
+                Err(e) => {
+                    println!("Invalid input. Please enter an integer. {}", e);
+                }
+            },
+            None => {
+                // println!("No input to parse")
+            }        }
     }
 }

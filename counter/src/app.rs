@@ -9,10 +9,8 @@ use makepad_widgets::*;
 // as a code editor) can notify the Makepad runtime that a DSL code block has been changed, allowing
 // the runtime to automatically update the affected widgets.
 live_design! {
-    import makepad_widgets::button::Button;
-    import makepad_widgets::desktop_window::DesktopWindow;
-    import makepad_widgets::view::View;
-    import makepad_widgets::label::Label;
+    import makepad_widgets::base::*;
+    import makepad_widgets::theme_desktop_dark::*;
     
     // The `{{App}}` syntax is used to inherit a DSL object from a Rust struct. This tells the
     // Makepad runtime that our DSL object corresponds to a Rust struct named `App`. Whenever an
@@ -23,10 +21,8 @@ live_design! {
         // for other widgets. Since the `ui` property on the DSL object `App` corresponds with the
         // `ui` field on the Rust struct `App`, the latter will be initialized from the DSL object
         // here below.
-        ui: <DesktopWindow>{
-            
+        ui: <Window>{
             show_bg: true
-
             // determines how the view widget itself is laid out. In this
             // case, the view widget takes up the entire window.
             width: Fill,
@@ -56,7 +52,7 @@ live_design! {
             // themselves how they want to handle instance properties. In the case of view widgets,
             // they simply iterate over their instance properties, and use them to instantiate their
             // child widgets.
-            <View> {
+            body = <View> {
                 // The properties below determines how child widgets are laid out within a view. In
                 // this case, child widgets flow downward, with 20 pixels of spacing in between them,
                 // and centered horizontally with respect to the entire view.
@@ -71,7 +67,7 @@ live_design! {
                     y: 0.5
                 }
                 // A label to display the counter.
-                label = <Label> {
+                label1 = <Label> {
                     draw_text: {
                         color: #f
                     },
@@ -85,7 +81,7 @@ live_design! {
                 // named `Button`, except for the properties defined here below, which override any
                 // existing values.
                 
-                button = <Button> {
+                button1 = <Button> {
                     text: "Count"
                 }
             }
@@ -154,14 +150,13 @@ impl AppMain for App{
         
         // Get a reference to our button from the view, and check if one of the actions returned by
         // the view was a notification that the button was clicked.
-        if self.ui.button(id!(button)).clicked(&actions) {
-            //cx.spawn_async(Self::do_network_request(cx.get_ref(), self.ui.clone()))
+        if self.ui.button(id!(button1)).clicked(&actions) {
             // Increment the counter.
             self.counter += 1;
             
             // Get a reference to our label from the view, update its text, and schedule a redraw
             // for it.
-            let label = self.ui.label(id!(label));
+            let label = self.ui.label(id!(label1));
             label.set_text(&format!("{}", self.counter));
             label.redraw(cx);
         }

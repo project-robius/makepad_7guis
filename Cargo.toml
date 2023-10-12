@@ -1,0 +1,6 @@
+workspace.members = [
+    "counter", 
+    "temp_conv",
+]
+
+workspace.resolver = "2"

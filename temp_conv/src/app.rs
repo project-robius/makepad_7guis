@@ -1,13 +1,11 @@
 use makepad_widgets::*;
 
 live_design! {
-    import makepad_widgets::desktop_window::DesktopWindow;
-    import makepad_widgets::label::Label;
-    import makepad_widgets::text_input::TextInput;
-    import makepad_widgets::view::View;
+    import makepad_widgets::base::*;
+    import makepad_widgets::theme_desktop_dark::*;
 
     App = {{App}} {
-        ui: <DesktopWindow>{
+        ui: <Window>{
             show_bg: true
             width: Fill
             height: Fill
@@ -18,7 +16,7 @@ live_design! {
                 }
             }
 
-            <View> {
+            body = <View> {
                 flow: Right,
                 spacing: 20,
                 align: {

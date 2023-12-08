@@ -111,15 +111,17 @@ impl App {
 impl AppMain for App{
 
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
+        let mut scope =  WidgetScope::default();
+        
         if let Event::Draw(event) = event {
             // This is a draw event, so create a draw context and use that to draw our application.
-            return self.ui.draw_widget_all(&mut Cx2d::new(cx, event));
+            return self.ui.draw_all(&mut Cx2d::new(cx, event), &mut scope);
         }
 
         // Forward the event to the frame. In this case, handle_event returns a list of actions.
         // Actions are similar to events, except that events are always forwarded downward to child
         // widgets, while actions are always returned back upwards to parent widgets.
-        let actions = self.ui.handle_widget_event(cx, event);
+        let actions = self.ui.handle_event(cx, event, &mut scope);
 
         let res = self.ui.text_input(id!(input_celsius)).changed(&actions);
         match res {

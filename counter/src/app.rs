@@ -138,15 +138,17 @@ impl AppMain for App{
     // This function is used to handle any incoming events from the host system. It is called
     // automatically by the code we generated with the call to the macro `main_app` above.
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
+        let mut scope =  WidgetScope::default();
+
         if let Event::Draw(event) = event {
             // This is a draw event, so create a draw context and use that to draw our application.
-            return self.ui.draw_widget_all(&mut Cx2d::new(cx, event));
+            return self.ui.draw_all(&mut Cx2d::new(cx, event), &mut scope);
         }
         
         // Forward the event to the view. In this case, handle_event returns a list of actions.
         // Actions are similar to events, except that events are always forwarded downward to child
         // widgets, while actions are always returned back upwards to parent widgets.
-        let actions = self.ui.handle_widget_event(cx, event);
+        let actions = self.ui.handle_event(cx, event, &mut scope);
         
         // Get a reference to our button from the view, and check if one of the actions returned by
         // the view was a notification that the button was clicked.
